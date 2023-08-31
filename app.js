@@ -26,7 +26,7 @@ app.use((req, res, next) => {
   User.findUserById('64f06fb65f68aef012860939')
     .then((user) => {
       console.log(user)
-      req.user = user;
+      req.user = new User(user.name, user.email, user.cart, user._id);
       next();
     })
     .catch(err => console.log(err));
