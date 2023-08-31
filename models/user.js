@@ -11,9 +11,39 @@ const UserSchema = new Schema({
         required: true
     },
     cart: {
-        items: [{ prdouctId: { type: Schema.Types.ObjectId, ref: 'Product', required: true }, quantity: { type: Number, required: true } }]
+        items: [{ productId: { type: Schema.Types.ObjectId, ref: 'Product', required: true }, quantity: { type: Number, required: true } }]
     }
 })
+
+
+UserSchema.methods.addToCart = function (product) {
+
+
+    const cartProdutIdx = this.cart.items.findIndex(cp => {
+
+        return cp.productId.toString() === product._id.toString();
+    })
+    let newQty = 1;
+    const presentCartItems = [...this.cart.items]
+    if (cartProdutIdx >= 0) {
+        newQty = this.cart.items[cartProdutIdx].quantity + 1;
+        presentCartItems[cartProdutIdx].quantity = newQty
+    } else {
+        presentCartItems.push({ productId: product._id, quantity: newQty })
+    }
+
+
+    const updatedCart = { items: presentCartItems }
+
+    this.cart = updatedCart;
+
+    return this.save();
+
+
+
+}
+
+
 
 
 module.exports = mongoose.model('User', UserSchema)
